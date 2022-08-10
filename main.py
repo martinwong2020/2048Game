@@ -10,6 +10,7 @@ def start_game():
     ]
     start_state=True
     progress_board=generate_board(board,start_state)
+    print("2048 but with a twist. A move can not be made twice in a row.")
     print("Movement Keys: ")
     print("Up: W or w")
     print("Down: S or s")
@@ -19,8 +20,11 @@ def start_game():
 
     Win=False
     Lost=False
+    Past_key=""
     while Win==False and Lost==False:
-        progress_board=game(progress_board)
+        result=game(progress_board,Past_key)
+        progress_board=result[0]
+        Past_key=result[1]
         print_board(progress_board)
         
         result=win_or_lose(Win,Lost,progress_board)
@@ -31,27 +35,37 @@ def start_game():
             Lost=result[1]
             print("Sorry you lost. Try Again?")
 
+def clicked(key):
+    return key
 #checks the user's move and merge/collapse based on input. Returns the new board where the values have shifted based on user's input.
-def game(board):
+def game(board,key):
     user_input=input("Player move: ").lower()
+    clicked=""
+    if(key==user_input):
+        print("Can't reuse the same move. Pick another move.")
+        return board,key
     if(user_input=="w"):
+        clicked="w"
         new_board=collapse(board,"w")
         result=merge(new_board,"w")
         new_board=result[0]
     elif(user_input=="s"):
+        clicked="s"
         new_board=collapse(board,"s")
         result=merge(new_board,"s")
         new_board=result[0]
     elif(user_input=="d"):
+        clicked="d"
         new_board=collapse(board,"d")
         result=merge(new_board,"d")
         new_board=result[0]
     elif(user_input=="a"):
+        clicked="a"
         new_board=collapse(board,"a")
         result=merge(new_board,"a")
         new_board=result[0]
     new_board=generate_board(new_board,False)
-    return new_board
+    return new_board,clicked
 
 #Generates a board that puts a new value into a random location of the incoming board
 def generate_board(board,start_state):
